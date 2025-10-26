@@ -15,57 +15,6 @@ const ZIP_DOWNLOAD_SVG_ICON = `
 </svg>
 `;
 
-// This function checks if our buttons are already on the page and adds them if not.
-function addDownloadButtons() {
-  // Check if we are on a post page
-  if (!window.location.pathname.startsWith('/p/') && !window.location.pathname.startsWith('/reel/')) {
-    return;
-  }
-
-  // Find the "action bar" where the like, comment, share buttons are.
-  const article = document.querySelector('article');
-  if (!article) return;
-
-  const buttonBar = article.querySelector('section span button')?.parentElement;
-  if (!buttonBar) return; // Not found, try again later
-
-  // Check if our buttons are already there
-  if (document.getElementById('insta-zip-downloader-btn')) {
-    return;
-  }
-
-  // --- Create Direct Download Button ---
-  const directDownloadButton = document.createElement('button');
-  directDownloadButton.id = 'insta-direct-downloader-btn';
-  directDownloadButton.type = 'button';
-  directDownloadButton.className = 'insta-downloader-button-direct'; // For styling
-  directDownloadButton.innerHTML = DIRECT_DOWNLOAD_SVG_ICON;
-  directDownloadButton.title = 'Download files individually';
-  directDownloadButton.onclick = (e) => handleDownload(e, 'individual');
-
-  // --- Create Zip Download Button ---
-  const zipDownloadButton = document.createElement('button');
-  zipDownloadButton.id = 'insta-zip-downloader-btn';
-  zipDownloadButton.type = 'button';
-  zipDownloadButton.className = 'insta-downloader-button-zip'; // For styling
-  zipDownloadButton.innerHTML = ZIP_DOWNLOAD_SVG_ICON;
-  zipDownloadButton.title = 'Download all as .zip';
-  zipDownloadButton.onclick = (e) => handleDownload(e, 'zip');
-
-  // Add the buttons to the bar. We'll add them before the bookmark button.
-  const bookmarkButton = buttonBar.querySelector('button[aria-label="Save"]');
-  const container = bookmarkButton ? bookmarkButton.parentElement : buttonBar;
-  
-  if (bookmarkButton) {
-    container.insertBefore(directDownloadButton, bookmarkButton);
-    container.insertBefore(zipDownloadButton, bookmarkButton);
-  } else {
-    // Fallback: just append them
-    container.appendChild(directDownloadButton);
-    container.appendChild(zipDownloadButton);
-  }
-}
-
 // Generic helper function to get post data
 async function getPostData() {
   const postUrl = new URL(window.location.href.split('?')[0]);
@@ -102,23 +51,90 @@ async function getPostData() {
   };
 }
 
+
+// This function checks if our buttons are already on the page and adds them if not.
+// It's now async so it can fetch post data for the tooltips.
+async function addDownloadButtons() {
+  // Check if we are on a post page
+  if (!window.location.pathname.startsWith('/p/') && !window.location.pathname.startsWith('/reel/')) {
+    return;
+  }
+
+  // Find the "action bar" where the like, comment, share buttons are.
+  const article = document.querySelector('article');
+  if (!article) return;
+
+  const buttonBar = article.querySelector('section span button')?.parentElement;
+  if (!buttonBar) return; // Not found, try again later
+
+  // Check if our buttons are already there
+  if (document.getElementById('insta-zip-downloader-btn')) {
+    return;
+  }
+
+  // --- Get Post Data First for Dynamic Tooltips ---
+  let postData;
+  try {
+    // We fetch the data here to set the correct tooltips
+    postData = await getPostData();
+  } catch (error) {
+    // If this fails (e.g., page still loading), the interval will try again
+    console.log('Post data not ready yet, will retry...');
+    return;
+  }
+
+  const isAlbum = postData.mediaUrls.length > 1;
+
+  // --- Create Direct Download Button ---
+  const directDownloadButton = document.createElement('button');
+  directDownloadButton.id = 'insta-direct-downloader-btn';
+  directDownloadButton.type = 'button';
+  directDownloadButton.className = 'insta-downloader-button-direct'; // For styling
+  directDownloadButton.innerHTML = DIRECT_DOWNLOAD_SVG_ICON;
+  directDownloadButton.title = isAlbum ? 'Album Download (Direct)' : 'Download File (Direct)';
+  directDownloadButton.onclick = (e) => handleDownload(e, 'individual', postData);
+
+  // --- Create Zip Download Button ---
+  const zipDownloadButton = document.createElement('button');
+  zipDownloadButton.id = 'insta-zip-downloader-btn';
+  zipDownloadButton.type = 'button';
+  zipDownloadButton.className = 'insta-downloader-button-zip'; // For styling
+  zipDownloadButton.innerHTML = ZIP_DOWNLOAD_SVG_ICON;
+  zipDownloadButton.title = isAlbum ? 'Album Download (Zip)' : 'Download File (Zip)';
+  zipDownloadButton.onclick = (e) => handleDownload(e, 'zip', postData);
+
+  // Add the buttons to the bar. We'll add them before the bookmark button.
+  const bookmarkButton = buttonBar.querySelector('button[aria-label="Save"]');
+  const container = bookmarkButton ? bookmarkButton.parentElement : buttonBar;
+  
+  if (bookmarkButton) {
+    container.insertBefore(directDownloadButton, bookmarkButton);
+    container.insertBefore(zipDownloadButton, bookmarkButton);
+  } else {
+    // Fallback: just append them
+    container.appendChild(directDownloadButton);
+    container.appendChild(zipDownloadButton);
+  }
+}
+
 // This function is called when ANY download button is clicked
-async function handleDownload(e, downloadType) {
+// It now receives postData so it doesn't have to fetch it again
+async function handleDownload(e, downloadType, postData) {
   const button = e.currentTarget;
   button.disabled = true;
   button.style.opacity = '0.5'; // Show loading state
 
   try {
-    const { mediaUrls, username, postCode } = await getPostData();
+    // We already have the post data
+    const { mediaUrls, username, postCode } = postData;
 
     if (downloadType === 'zip') {
       // --- ZIP DOWNLOAD ---
-      const filename = `${username}_${postCode}.zip`;
       chrome.runtime.sendMessage(
         {
           action: 'download_zip',
           urls: mediaUrls,
-          filename: filename
+          filename: `${username}_${postCode}.zip`
         },
         (response) => handleResponse(button, response)
       );
