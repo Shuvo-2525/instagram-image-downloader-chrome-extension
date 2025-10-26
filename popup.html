@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Downloader Settings</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://i.ibb.co/q3BxLgf2/white-logo-200-01.png" alt="ShurikenIT Logo">
+    </div>
+
+    <p class="description">
+      Set the default subfolders for your downloads.
+    </p>
+
+    <div class="form-group">
+      <label for="photo-path">Photo Subfolder</label>
+      <input type="text" id="photo-path" placeholder="e.g., Instagram/Photos">
+    </div>
+
+    <div class="form-group">
+      <label for="video-path">Video Subfolder</label>
+      <input type="text" id="video-path" placeholder="e.g., Instagram/Videos">
+    </div>
+
+    <div class="form-group">
+      <label for="album-path">Album (Zip) Subfolder</label>
+      <input type="text" id="album-path" placeholder="e.g., Instagram/Albums">
+    </div>
+
+    <button id="save-button">Save Settings</button>
+    <div id="status-message"></div>
+
+  </div>
+  
+  <div class="footer">
+    build by <a href="https://shurikenit.com" target="_blank">ShurikenIT</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
