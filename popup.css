@@ -3,97 +3,101 @@ body, html {
   padding: 0;
   width: 350px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: #1a1b1e;
+  /* Use a gradient for the background of the *page* */
+  background: linear-gradient(135deg, #1f1f1f, #1a1b1e);
   color: #f0f0f0;
+  overflow: hidden; /* Hide overflow from card animation */
 }
 
 .container {
-  padding: 20px;
+  padding: 25px;
+  margin: 15px;
+  /* Modern card background */
+  background: rgba(30, 30, 30, 0.7);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  
+  /* Cool mouse hover effect */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.container:hover {
+  transform: scale(1.03) rotateZ(-1deg);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .header {
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .header img {
-  max-width: 150px;
+  max-width: 140px;
+  opacity: 0.9;
 }
 
 .description {
-  font-size: 14px;
-  color: #a0a0a0;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 6px;
+  font-size: 15px;
   color: #c0c0c0;
+  text-align: center;
+  margin-bottom: 10px;
+  line-height: 1.4;
 }
 
-.form-group input[type="text"] {
-  width: calc(100% - 20px); /* 100% minus padding */
-  padding: 10px;
-  border: 1px solid #444;
-  background-color: #2a2b2e;
-  color: #f0f0f0;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s;
+.description.small {
+  font-size: 13px;
+  color: #a0a0a0;
+  margin-top: 5px;
+  margin-bottom: 25px;
 }
 
-.form-group input[type="text"]:focus {
-  border-color: #007aff; /* A sleek blue accent */
-}
-
-button {
-  width: 100%;
-  padding: 12px;
+/* New Modern Button Style */
+.visit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
   border: none;
-  border-radius: 8px;
-  background-image: linear-gradient(to right, #007aff, #0056b3);
+  border-radius: 10px;
+  background: linear-gradient(90deg, #007aff, #0056b3);
   color: white;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
+  text-decoration: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 10px;
-}
-
-button:hover {
-  opacity: 0.9;
+  transition: all 0.25s ease;
   box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2);
 }
 
-#status-message {
-  text-align: center;
-  margin-top: 15px;
-  font-size: 13px;
-  color: #28a745; /* Green for success */
+.visit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.3);
+  background: linear-gradient(90deg, #0088ff, #0066cc);
 }
+
+.visit-btn svg {
+  margin-left: 8px;
+}
+
 
 .footer {
   text-align: center;
   font-size: 12px;
-  color: #888;
-  padding: 15px 20px;
-  border-top: 1px solid #333;
+  color: #777;
+  padding: 0 20px 15px 20px; /* Adjusted padding */
+  border-top: none; /* Removed border */
 }
 
 .footer a {
-  color: #aaa;
+  color: #999;
   text-decoration: none;
 }
 
 .footer a:hover {
   text-decoration: underline;
 }
+
